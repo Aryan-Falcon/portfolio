@@ -56,3 +56,15 @@ if (themeToggle) {
     themeToggle.textContent = "☀️";
   }
 }
+const faders = document.querySelectorAll('.fade-in');
+
+window.addEventListener('scroll', () => {
+  const triggerPoint = window.innerHeight * 0.85;
+
+  faders.forEach(el => {
+    const rectTop = el.getBoundingClientRect().top;
+    if (rectTop < triggerPoint) {
+      el.classList.add('visible');
+    }
+  });
+});
