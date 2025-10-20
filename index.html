@@ -5,78 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aryan Lamba | Portfolio</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- --- Ball animation CSS (add to your style.css if you prefer) --- -->
-  <style>
-    /* Container for positioning the ball relative to header */
-    .navbar {
-      position: relative; /* ensure the ball can be absolutely positioned relative to navbar */
-      z-index: 10;
-    }
-
-    /* Ball wrapper (keeps the ball independent from layout) */
-    .ball-wrap {
-      pointer-events: none; /* don't interfere with clicks */
-      position: absolute;
-      top: -80px; /* start above the header */
-      left: 84px; /* near the logo — adjust if your layout differs */
-      width: 40px;
-      height: 40px;
-      display: block;
-      z-index: 9999; /* above everything */
-      transform-origin: center center;
-    }
-
-    .ball {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff8c4 0%, #ffd24d 30%, #ff9f1c 60%, #f97316 100%);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.18), inset 0 -6px 10px rgba(0,0,0,0.08);
-      transform: translateY(-160px); /* initial off-screen starting point */
-      will-change: transform;
-    }
-
-    /* BOUNCE animation: drop then bounce */
-    @keyframes ball-bounce {
-      0%   { transform: translateY(-160px) rotate(0deg); }
-      55%  { transform: translateY(0)     rotate(0deg);     } /* first hit */
-      72%  { transform: translateY(-38px) rotate(-12deg);   } /* bounce up */
-      86%  { transform: translateY(0)     rotate(6deg);     } /* settle */
-      100% { transform: translateY(0)     rotate(0deg);     }
-    }
-
-    /* ROLL animation: roll to the right (distance set by JS via CSS var) */
-    @keyframes ball-roll {
-      0%   { transform: translateX(0) rotate(0deg); }
-      100% { transform: translateX(var(--roll-distance, 220px)) rotate(1080deg); }
-    }
-
-    /* classes toggled by JS */
-    .ball.bouncing {
-      animation: ball-bounce 1.05s cubic-bezier(.22,.9,.25,1) forwards;
-    }
-
-    .ball.rolling {
-      animation: ball-roll 1.4s linear forwards;
-    }
-
-    /* Reduced motion: don't animate if user prefers reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      .ball,
-      .ball.bouncing,
-      .ball.rolling {
-        animation: none !important;
-        transform: translateY(0) !important;
-      }
-    }
-
-    /* Small responsive tweak if your navbar compresses on mobile */
-    @media (max-width: 560px) {
-      .ball-wrap { left: 62px; top: -68px; width: 34px; height: 34px; }
-      .ball { width: 34px; height: 34px; }
-    }
-  </style>
 </head>
 <body>
   <header>
@@ -88,11 +16,6 @@
         <li><a href="contact.html">Contact</a></li>
       </ul>
       <button id="theme-toggle" class="theme-btn">🌙</button>
-
-      <!-- Ball markup (positioned absolutely inside navbar) -->
-      <span class="ball-wrap" aria-hidden="true">
-        <span class="ball"></span>
-      </span>
     </nav>
   </header>
 
@@ -136,92 +59,17 @@
       <li>Python for Everybody Specialization – University of Michigan (Coursera, 2023)</li>
       <li>CodeHS Python Certification(2024)</li>
       <li>AWS Fundamentals Specialization - Amazon Web Services (Coursera, 2024)</li>
-      <li>Web Design for Everybody: Basics of Web Development & Coding - University of Michigan (Coursera, 2024)</li>
+      <li>Web Design for Everybody: Basics of Web Development & Coding - University of Michigan (Coursera, 2024) </li>
       <li>CodeHS Java Certification(2025)</li>
-      <li>Information Technology Specialist in Java Certification (Certiport, 2025)</li>
+      <li>Information Technonlogy Specialist in Java Cerification (Certiport, 2025)</li>
       <li>Algorithmic Toolbox - University of California San Diego (Coursera, 2025)</li>
-      <li>Data Structures - University of California San Diego (Coursera, In Progress)</li>
+      <li>Data Structures - University of California San Deigo (Coursera, In Progress)</li>
     </ul>
   </section>
 
   <footer>
     <p>Aryan Lamba | Built with HTML, CSS & JS</p>
   </footer>
-
-  <!-- Add to your script.js or keep here for quick testing -->
-  <script>
-    (function () {
-      const ball = document.querySelector('.ball');
-      const ballWrap = document.querySelector('.ball-wrap');
-      const navbar = document.querySelector('.navbar');
-
-      if (!ball || !navbar) return;
-
-      // Compute roll distance (distance across the navbar) and set CSS variable
-      function setRollDistance() {
-        // distance from ball's left edge to the right edge of the nav minus some margin
-        const navRect = navbar.getBoundingClientRect();
-        const wrapRect = ballWrap.getBoundingClientRect();
-        // keep a 24px padding from the right edge
-        const paddingRight = 24;
-        const distance = Math.max(0, (navRect.right - wrapRect.left) - paddingRight);
-        // set as CSS var (px)
-        ball.style.setProperty('--roll-distance', `${distance}px`);
-      }
-
-      // Sequence control:
-      // 1) bounce -> on end -> 2) roll -> on end -> reset -> repeat after delay
-      function startSequence() {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          // don't animate if reduced-motion preference set
-          ball.style.transform = 'translateY(0)';
-          return;
-        }
-
-        // ensure roll distance is accurate
-        setRollDistance();
-
-        // reset classes & inline styles
-        ball.classList.remove('bouncing', 'rolling');
-        ball.style.animation = 'none';
-        // force reflow so animations restart cleanly
-        void ball.offsetWidth;
-
-        // start bounce
-        ball.classList.add('bouncing');
-      }
-
-      // When bounce ends, start roll
-      ball.addEventListener('animationend', (e) => {
-        if (e.animationName === 'ball-bounce') {
-          // start roll
-          ball.classList.remove('bouncing');
-          // ensure roll distance up to date (in case layout changed)
-          setRollDistance();
-          // small delay so it looks natural
-          setTimeout(() => ball.classList.add('rolling'), 80);
-        } else if (e.animationName === 'ball-roll') {
-          // roll finished: reset and schedule next run
-          ball.classList.remove('rolling');
-          // put ball back above header (starting position)
-          ball.style.transform = 'translateY(-160px)';
-          // restart after a pause (2.2s)
-          setTimeout(startSequence, 2200);
-        }
-      });
-
-      // Keep roll distance up-to-date on resize
-      window.addEventListener('resize', () => {
-        setRollDistance();
-      }, { passive: true });
-
-      // Kick off after initial delay so page loads smoothly
-      window.addEventListener('load', () => {
-        // small delay so header is settled
-        setTimeout(startSequence, 700);
-      });
-    })();
-  </script>
 
   <script src="script.js"></script>
 </body>
